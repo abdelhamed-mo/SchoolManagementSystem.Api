@@ -1,20 +1,3 @@
-using Domain.Contracts;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Persistence;
-using Persistence.Contracts;
-using Presentation;
-using Service;
-using Service.AdminService;
-using Service.StudentService;
-using ServiceAbstraction;
-using ServiceAbstraction.student;
-using System.Reflection.Metadata;
-using System.Threading.Tasks;
-
 namespace SchoolMAnagementSystem.Api
 {
 	public static class Program
@@ -24,6 +7,7 @@ namespace SchoolMAnagementSystem.Api
 			var builder = WebApplication.CreateBuilder(args);
 
 			// Add services to the container.
+
 
 			builder.Services.AddControllers();
 			// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
