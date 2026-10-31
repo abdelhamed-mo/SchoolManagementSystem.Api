@@ -13,5 +13,6 @@ namespace ServiceAbstraction
 		public IStudentService StudentService { get; }
 		public IAuthenticationService AuthenticationService { get; }
 		public IParentService ParentService { get; }
+		public IGradeService GradeService { get; }
 	}
 }

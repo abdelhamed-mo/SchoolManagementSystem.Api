@@ -12,5 +12,6 @@ namespace Domain.Contracts
 		Task<TEntity> GetAsync(Specifications<TEntity> specifications);
 		Task<IEnumerable<TEntity>> GetAllAsync(Specifications<TEntity> specifications);
 		Task<int> CountAsync();
+		Task<int> CountAsync(Specifications<TEntity> specifications);
 	}
 }

@@ -11,5 +11,13 @@ namespace Service.ConcreteSpecifications
 		{
 
 		}
+
+		public GradeSpecifications(Shared.Params.GradesParams _params, bool applyPagination = true)
+			: base(g => string.IsNullOrWhiteSpace(_params.Search) || g.Name.ToUpper().Contains(_params.Search!.ToUpper().Trim()))
+		{
+			// GradeDto requires only Id and Name; avoid unnecessary includes
+			if (applyPagination)
+				ApplyPagination(_params.PageSize, _params.PageIndex);
+		}
 	}
 }

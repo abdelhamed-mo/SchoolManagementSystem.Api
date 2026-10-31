@@ -27,6 +27,9 @@ namespace Persistence.Contracts
 		public async Task<int> CountAsync()
 		=> await mainContext.Set<TEntity>().CountAsync();
 
+		public async Task<int> CountAsync(Specifications<TEntity> specifications)
+		=> await ApplySpecification(specifications).CountAsync();
+
 		#region With Specifications
 		public async Task<TEntity?> GetAsync(Specifications<TEntity> specifications)
 			=> await ApplySpecification(specifications).FirstOrDefaultAsync();
