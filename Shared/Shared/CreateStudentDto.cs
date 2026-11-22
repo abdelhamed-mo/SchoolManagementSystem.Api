@@ -22,6 +22,8 @@ namespace Shared
 		public int GradeId { get; set; }
 		public int ParentId { get; set; }
 		public int ClassId { get; set; }
+		public int AcademicYearId { get; set; }
+		public DateTime EnrollmentStartDate { get; set; }
 
 	}
 }

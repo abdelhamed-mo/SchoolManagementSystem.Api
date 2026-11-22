@@ -13,8 +13,6 @@ namespace ServiceAbstraction.student
         Task<bool> DeleteAsync(int id);
         Task<IEnumerable<StudentCourseDto>> GetAvailableCoursesAsync();
         Task<IEnumerable<ClassDto>> GetClassesAsync(int studentId);
-
-		Task<IEnumerable<AttendanceDto>> GetMyAttendanceAsync(int studentId);
     }
 
 }

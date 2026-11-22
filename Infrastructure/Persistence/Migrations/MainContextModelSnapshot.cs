@@ -22,6 +22,35 @@ namespace Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Entities.AcademicYear", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("AcademicYears");
+                });
+
             modelBuilder.Entity("Domain.Entities.Admin", b =>
                 {
                     b.Property<int>("Id")
@@ -42,7 +71,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Admins", (string)null);
+                    b.ToTable("Admins");
                 });
 
             modelBuilder.Entity("Domain.Entities.Attendance", b =>
@@ -72,7 +101,121 @@ namespace Persistence.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendances");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BreakAfterPeriodNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BreakDurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("SchoolDayStartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ClassId")
+                        .IsUnique();
+
+                    b.ToTable("BaseTimetables");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetableEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BaseTimetableId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseTimetableId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("BaseTimetableEntries");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetableEntryPeriod", b =>
+                {
+                    b.Property<int>("BaseTimetableEntryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BaseTimetablePeriodId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BaseTimetableEntryId", "BaseTimetablePeriodId");
+
+                    b.HasIndex("BaseTimetablePeriodId");
+
+                    b.ToTable("BaseTimetableEntryPeriods");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetablePeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BaseTimetableId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsBreak")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("PeriodNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BaseTimetableId", "SequenceNumber")
+                        .IsUnique();
+
+                    b.ToTable("BaseTimetablePeriods");
                 });
 
             modelBuilder.Entity("Domain.Entities.Class", b =>
@@ -83,12 +226,17 @@ namespace Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AcademicYear")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("AcademicYearId")
+                        .HasColumnType("int");
 
                     b.Property<int>("GradeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("LegacyAcademicYear")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("AcademicYear")
+                        .HasJsonPropertyName("AcademicYear");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -96,9 +244,11 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AcademicYearId");
+
                     b.HasIndex("GradeId");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("Domain.Entities.ClassSubject", b =>
@@ -113,7 +263,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.ToTable("ClassSubject", (string)null);
+                    b.ToTable("ClassSubject");
                 });
 
             modelBuilder.Entity("Domain.Entities.ClassTeacher", b =>
@@ -131,7 +281,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.ToTable("ClassTeacher", (string)null);
+                    b.ToTable("ClassTeacher");
                 });
 
             modelBuilder.Entity("Domain.Entities.Enrollment", b =>
@@ -142,19 +292,33 @@ namespace Persistence.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("AcademicYearId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ClassId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AcademicYearId");
+
                     b.HasIndex("ClassId");
 
-                    b.HasIndex("StudentId");
+                    b.HasIndex("StudentId", "AcademicYearId");
 
-                    b.ToTable("Enrollments", (string)null);
+                    b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("Domain.Entities.Exam", b =>
@@ -184,6 +348,9 @@ namespace Persistence.Migrations
                     b.Property<int>("PassScore")
                         .HasColumnType("int");
 
+                    b.Property<int?>("SemesterId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
 
@@ -193,9 +360,11 @@ namespace Persistence.Migrations
 
                     b.HasIndex("GradeId");
 
+                    b.HasIndex("SemesterId");
+
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Exams", (string)null);
+                    b.ToTable("Exams");
                 });
 
             modelBuilder.Entity("Domain.Entities.Grade", b =>
@@ -212,7 +381,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Grades", (string)null);
+                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("Domain.Entities.GradeResult", b =>
@@ -243,7 +412,40 @@ namespace Persistence.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("GradeResults", (string)null);
+                    b.ToTable("GradeResults");
+                });
+
+            modelBuilder.Entity("Domain.Entities.HolidayException", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RemovedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StartDate", "EndDate", "IsActive");
+
+                    b.ToTable("HolidayExceptions");
                 });
 
             modelBuilder.Entity("Domain.Entities.Parent", b =>
@@ -266,7 +468,167 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Parents", (string)null);
+                    b.ToTable("Parents");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduleChangeLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActorUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewValues")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OperationType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreviousValues")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ScheduledLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduledLessonId", "Timestamp");
+
+                    b.ToTable("ScheduleChangeLogs");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduledLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WeeklyScheduleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TeacherId");
+
+                    b.HasIndex("WeeklyScheduleId");
+
+                    b.HasIndex("Date", "TeacherId");
+
+                    b.HasIndex("Date", "WeeklyScheduleId");
+
+                    b.ToTable("ScheduledLessons");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduledLessonPeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("PeriodNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScheduledLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("WeeklySchedulePeriodId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduledLessonId");
+
+                    b.HasIndex("WeeklySchedulePeriodId");
+
+                    b.ToTable("ScheduledLessonPeriods");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Semester", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("AcademicYearId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("Semesters");
                 });
 
             modelBuilder.Entity("Domain.Entities.Student", b =>
@@ -314,7 +676,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Domain.Entities.Subject", b =>
@@ -331,7 +693,7 @@ namespace Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subjects", (string)null);
+                    b.ToTable("Subjects");
                 });
 
             modelBuilder.Entity("Domain.Entities.Teacher", b =>
@@ -361,7 +723,7 @@ namespace Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Teachers", (string)null);
+                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("Domain.Entities.TeacherSubject", b =>
@@ -376,7 +738,88 @@ namespace Persistence.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("TeacherSubject", (string)null);
+                    b.ToTable("TeacherSubject");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WeeklySchedule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AcademicYearId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("GeneratedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SemesterId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("WeekEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("WeekStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AcademicYearId");
+
+                    b.HasIndex("SemesterId");
+
+                    b.HasIndex("WeekStartDate");
+
+                    b.HasIndex("ClassId", "AcademicYearId", "SemesterId", "WeekStartDate")
+                        .IsUnique();
+
+                    b.ToTable("WeeklySchedules");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WeeklySchedulePeriod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CurrentScheduledLessonId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsBreak")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("PeriodNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SequenceNumber")
+                        .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("WeeklyScheduleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentScheduledLessonId");
+
+                    b.HasIndex("WeeklyScheduleId");
+
+                    b.ToTable("WeeklySchedulePeriods");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -593,13 +1036,13 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.Entities.Class", "Class")
                         .WithMany("Attendances")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Student", "Student")
                         .WithMany("Attendances")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Class");
@@ -607,13 +1050,88 @@ namespace Persistence.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("Domain.Entities.BaseTimetable", b =>
+                {
+                    b.HasOne("Domain.Entities.Class", "Class")
+                        .WithMany("BaseTimetables")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetableEntry", b =>
+                {
+                    b.HasOne("Domain.Entities.BaseTimetable", "BaseTimetable")
+                        .WithMany("Entries")
+                        .HasForeignKey("BaseTimetableId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Subject", "Subject")
+                        .WithMany("BaseTimetableEntries")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Teacher", "Teacher")
+                        .WithMany("BaseTimetableEntries")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BaseTimetable");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetableEntryPeriod", b =>
+                {
+                    b.HasOne("Domain.Entities.BaseTimetableEntry", "BaseTimetableEntry")
+                        .WithMany("Periods")
+                        .HasForeignKey("BaseTimetableEntryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.BaseTimetablePeriod", "BaseTimetablePeriod")
+                        .WithMany("Entries")
+                        .HasForeignKey("BaseTimetablePeriodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BaseTimetableEntry");
+
+                    b.Navigation("BaseTimetablePeriod");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetablePeriod", b =>
+                {
+                    b.HasOne("Domain.Entities.BaseTimetable", "BaseTimetable")
+                        .WithMany("Periods")
+                        .HasForeignKey("BaseTimetableId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BaseTimetable");
+                });
+
             modelBuilder.Entity("Domain.Entities.Class", b =>
                 {
+                    b.HasOne("Domain.Entities.AcademicYear", "AcademicYear")
+                        .WithMany("Classes")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.Entities.Grade", "Grade")
                         .WithMany("Classes")
                         .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AcademicYear");
 
                     b.Navigation("Grade");
                 });
@@ -658,17 +1176,24 @@ namespace Persistence.Migrations
 
             modelBuilder.Entity("Domain.Entities.Enrollment", b =>
                 {
+                    b.HasOne("Domain.Entities.AcademicYear", "AcademicYear")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.Entities.Class", "Class")
-                        .WithMany()
+                        .WithMany("Enrollments")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Student", "Student")
-                        .WithMany()
+                        .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("AcademicYear");
 
                     b.Navigation("Class");
 
@@ -680,7 +1205,7 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.Entities.Class", "Class")
                         .WithMany("Exams")
                         .HasForeignKey("ClassId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Grade", "Grade")
@@ -689,15 +1214,22 @@ namespace Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Semester", "Semester")
+                        .WithMany("Exams")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Domain.Entities.Subject", "Subject")
                         .WithMany("Exams")
                         .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Class");
 
                     b.Navigation("Grade");
+
+                    b.Navigation("Semester");
 
                     b.Navigation("Subject");
                 });
@@ -707,7 +1239,7 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.Entities.Exam", "Exam")
                         .WithMany("GradeResults")
                         .HasForeignKey("ExamId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Grade", "Grade")
@@ -719,7 +1251,7 @@ namespace Persistence.Migrations
                     b.HasOne("Domain.Entities.Student", "Student")
                         .WithMany("GradeResults")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Exam");
@@ -738,6 +1270,74 @@ namespace Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduleChangeLog", b =>
+                {
+                    b.HasOne("Domain.Entities.ScheduledLesson", "ScheduledLesson")
+                        .WithMany("ChangeLogs")
+                        .HasForeignKey("ScheduledLessonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScheduledLesson");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduledLesson", b =>
+                {
+                    b.HasOne("Domain.Entities.Subject", "Subject")
+                        .WithMany("ScheduledLessons")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Teacher", "Teacher")
+                        .WithMany("ScheduledLessons")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.WeeklySchedule", "WeeklySchedule")
+                        .WithMany("Lessons")
+                        .HasForeignKey("WeeklyScheduleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Teacher");
+
+                    b.Navigation("WeeklySchedule");
+                });
+
+            modelBuilder.Entity("Domain.Entities.ScheduledLessonPeriod", b =>
+                {
+                    b.HasOne("Domain.Entities.ScheduledLesson", "ScheduledLesson")
+                        .WithMany("Periods")
+                        .HasForeignKey("ScheduledLessonId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.WeeklySchedulePeriod", "WeeklySchedulePeriod")
+                        .WithMany("LessonPeriods")
+                        .HasForeignKey("WeeklySchedulePeriodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScheduledLesson");
+
+                    b.Navigation("WeeklySchedulePeriod");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Semester", b =>
+                {
+                    b.HasOne("Domain.Entities.AcademicYear", "AcademicYear")
+                        .WithMany("Semesters")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
                 });
 
             modelBuilder.Entity("Domain.Entities.Student", b =>
@@ -805,6 +1405,51 @@ namespace Persistence.Migrations
                     b.Navigation("Teacher");
                 });
 
+            modelBuilder.Entity("Domain.Entities.WeeklySchedule", b =>
+                {
+                    b.HasOne("Domain.Entities.AcademicYear", "AcademicYear")
+                        .WithMany("WeeklySchedules")
+                        .HasForeignKey("AcademicYearId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Class", "Class")
+                        .WithMany("WeeklySchedules")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Semester", "Semester")
+                        .WithMany("WeeklySchedules")
+                        .HasForeignKey("SemesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AcademicYear");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Semester");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WeeklySchedulePeriod", b =>
+                {
+                    b.HasOne("Domain.Entities.ScheduledLesson", "CurrentScheduledLesson")
+                        .WithMany()
+                        .HasForeignKey("CurrentScheduledLessonId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Entities.WeeklySchedule", "WeeklySchedule")
+                        .WithMany("Periods")
+                        .HasForeignKey("WeeklyScheduleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CurrentScheduledLesson");
+
+                    b.Navigation("WeeklySchedule");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -856,17 +1501,51 @@ namespace Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Domain.Entities.AcademicYear", b =>
+                {
+                    b.Navigation("Classes");
+
+                    b.Navigation("Enrollments");
+
+                    b.Navigation("Semesters");
+
+                    b.Navigation("WeeklySchedules");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetable", b =>
+                {
+                    b.Navigation("Entries");
+
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetableEntry", b =>
+                {
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("Domain.Entities.BaseTimetablePeriod", b =>
+                {
+                    b.Navigation("Entries");
+                });
+
             modelBuilder.Entity("Domain.Entities.Class", b =>
                 {
                     b.Navigation("Attendances");
+
+                    b.Navigation("BaseTimetables");
 
                     b.Navigation("ClassSubjects");
 
                     b.Navigation("ClassTeachers");
 
+                    b.Navigation("Enrollments");
+
                     b.Navigation("Exams");
 
                     b.Navigation("Students");
+
+                    b.Navigation("WeeklySchedules");
                 });
 
             modelBuilder.Entity("Domain.Entities.Exam", b =>
@@ -890,27 +1569,63 @@ namespace Persistence.Migrations
                     b.Navigation("Students");
                 });
 
+            modelBuilder.Entity("Domain.Entities.ScheduledLesson", b =>
+                {
+                    b.Navigation("ChangeLogs");
+
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Semester", b =>
+                {
+                    b.Navigation("Exams");
+
+                    b.Navigation("WeeklySchedules");
+                });
+
             modelBuilder.Entity("Domain.Entities.Student", b =>
                 {
                     b.Navigation("Attendances");
+
+                    b.Navigation("Enrollments");
 
                     b.Navigation("GradeResults");
                 });
 
             modelBuilder.Entity("Domain.Entities.Subject", b =>
                 {
+                    b.Navigation("BaseTimetableEntries");
+
                     b.Navigation("ClassSubjects");
 
                     b.Navigation("Exams");
+
+                    b.Navigation("ScheduledLessons");
 
                     b.Navigation("TeacherSubjects");
                 });
 
             modelBuilder.Entity("Domain.Entities.Teacher", b =>
                 {
+                    b.Navigation("BaseTimetableEntries");
+
+                    b.Navigation("ScheduledLessons");
+
                     b.Navigation("TeacherClasses");
 
                     b.Navigation("TeacherSubjects");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WeeklySchedule", b =>
+                {
+                    b.Navigation("Lessons");
+
+                    b.Navigation("Periods");
+                });
+
+            modelBuilder.Entity("Domain.Entities.WeeklySchedulePeriod", b =>
+                {
+                    b.Navigation("LessonPeriods");
                 });
 #pragma warning restore 612, 618
         }

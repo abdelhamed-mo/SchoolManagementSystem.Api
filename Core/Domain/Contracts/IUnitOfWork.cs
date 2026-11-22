@@ -6,6 +6,7 @@ namespace Domain.Contracts
 	{
 		public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class;
 		public Task<int> SaveChangesAsync();
+		public Task ExecuteInTransactionAsync(Func<Task> action);
 
 	}
 }

@@ -10,4 +10,8 @@
     <Folder Include="Helper\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="17.0.0" />
+  </ItemGroup>
+
 </Project>

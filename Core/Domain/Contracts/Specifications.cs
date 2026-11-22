@@ -11,8 +11,11 @@ namespace Domain.Contracts
 		public Expression<Func<T, bool>>? Criteria { get; }
 
 		public List<Expression<Func<T, object>>> Includes { get; } = new();
+		public List<string> IncludeStrings { get; } = new();
 		protected void AddInclude(Expression<Func<T, object>> include)
 			=> Includes.Add(include);
+		protected void AddInclude(string include)
+			=> IncludeStrings.Add(include);
 
 		public int Take { get; private set; }
 		public int Skip { get; private set; }

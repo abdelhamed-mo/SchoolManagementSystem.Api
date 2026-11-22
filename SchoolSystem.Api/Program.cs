@@ -20,6 +20,7 @@ namespace SchoolMAnagementSystem.Api
 			builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 			builder.Services.AddScoped<IServiceManager, ServiceManger>();
+			builder.Services.AddHostedService<WeeklyScheduleGenerationHostedService>();
 
             builder.Services.AddControllers().AddApplicationPart(typeof(ControllerAssembly).Assembly);
 			builder.Services.AddDbContext<MainContext>(o => o.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSqlConnection")));

@@ -20,6 +20,9 @@ namespace Domain.Entities
 		public int GradeId { get; set; }
 		public Grade Grade { get; set; } 
 
+		public int? SemesterId { get; set; }
+		public Semester? Semester { get; set; }
+
 		public ICollection<GradeResult> GradeResults { get; set; } 
 	}
 

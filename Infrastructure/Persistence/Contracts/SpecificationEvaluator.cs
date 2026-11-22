@@ -18,6 +18,7 @@ namespace Persistence.Contracts
 				query = query.Where(specifications.Criteria); 
 
 			query = specifications.Includes.Aggregate(query, (current, increment) => current.Include(increment));
+			query = specifications.IncludeStrings.Aggregate(query, (current, increment) => current.Include(increment));
 
 			if (specifications.IsPaginated)
 			{

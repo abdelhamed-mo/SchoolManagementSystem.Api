@@ -26,6 +26,7 @@ namespace Domain.Entities
 
 		public ICollection<Attendance> Attendances { get; set; } 
 		public ICollection<GradeResult> GradeResults { get; set; }
+		public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 	}
 
 }

@@ -1,0 +1,9 @@
+# Copilot Instructions
+
+## Project Guidelines
+- For the School Management System, apply persistent project-wide coding standards: thin ApiBaseController-based controllers without manual ModelState checks; services own validation/business logic/entity existence checks; use repository/specification architecture and async conventions; use entity-specific NotFoundException subclasses accepting only ID and centralized exception middleware; never use 204/NoContent, with POST 201 Created, PUT 200 OK updated resource, DELETE 200 OK meaningful response, and empty collection/paginated results for empty GET collections; inspect analogous implementations, create all required components, build, and report unresolved business decisions; avoid new patterns/packages, unrelated refactoring, and authentication/authorization changes.
+- All controllers should use explicit `Task<ActionResult<T>>` return types, expression-bodied single-line delegation to `IServiceManager`, and avoid `IActionResult` or manual response handling when concrete types are available. DTOs should be passed directly, and update endpoints must receive the ID within `UpdateDto` rather than a separate route ID unless an established contract requires otherwise. 
+- All services must verify entity existence before update/delete, use the `UpdateDto` ID, throw entity-specific `NotFoundException(id)`, avoid null-forgiving operators, and reuse one retrieved entity without duplicate queries.
+
+## Entity Framework Core Guidelines
+- For staged EF Core migrations with unbackfillable historical data, make CLR foreign-key properties and Fluent API relationships optional before generating/editing the migration; do not manually make the snapshot nullable while the model remains required. Tighten relationships in a later migration after approved backfill.

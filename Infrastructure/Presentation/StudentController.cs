@@ -74,10 +74,8 @@ namespace Presentation.Controllers
 
         // GET: api/students/{studentId}/attendance
         [HttpGet("{studentId:int}/attendance")]
-        public async Task<IActionResult> GetMyAttendance(int studentId)
-        {
-            var attendance = await serviceManager.StudentService.GetMyAttendanceAsync(studentId);
-            return Ok(attendance);
-        }
+        public async Task<ActionResult<IEnumerable<AttendanceDto>>> GetMyAttendance(int studentId)
+            => new ActionResult<IEnumerable<AttendanceDto>>(
+                (await serviceManager.AttendanceService.GetAttendanceByStudentAsync(studentId)).ToList());
     }
 }

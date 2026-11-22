@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Domain.Contracts;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Exceptions.NotFoundExceptions;
 using ServiceAbstraction.student;
 using Shared;
@@ -47,13 +48,41 @@ namespace Service.StudentService
 
         public async Task<StudentDto> CreateAsync(CreateStudentDto dto)
         {
+            var classEntity = await unitOfWork.GetRepository<Class, int>().GetAsync(dto.ClassId);
+            if (classEntity is null)
+                throw new ClassNotFoundException(dto.ClassId);
+
+            var academicYear = await unitOfWork.GetRepository<AcademicYear, int>().GetAsync(dto.AcademicYearId);
+            if (academicYear is null)
+                throw new AcademicYearNotFoundException(dto.AcademicYearId);
+            if (classEntity.AcademicYearId != dto.AcademicYearId)
+                throw new ValidationException(new[] { "The selected class must belong to the selected academic year." });
+            if (dto.EnrollmentStartDate.Date < academicYear.StartDate.Date || dto.EnrollmentStartDate.Date > academicYear.EndDate.Date)
+                throw new ValidationException(new[] { "Enrollment start date must be within the academic year." });
+
             var student = mapper.Map<Student>(dto);
+            student.EnrollmentDate = dto.EnrollmentStartDate.Date;
+            student.ClassId = classEntity.Id;
+            student.Class = classEntity;
 
-            await unitOfWork
-                .GetRepository<Student, int>()
-                .AddAsync(student);
+            await unitOfWork.ExecuteInTransactionAsync(async () =>
+            {
+                await unitOfWork.GetRepository<Student, int>().AddAsync(student);
+                await unitOfWork.SaveChangesAsync();
 
-            await unitOfWork.SaveChangesAsync();
+                await unitOfWork.GetRepository<Enrollment, int>().AddAsync(new Enrollment
+                {
+                    Student = student,
+                    StudentId = student.Id,
+                    Class = classEntity,
+                    ClassId = classEntity.Id,
+                    AcademicYear = academicYear,
+                    AcademicYearId = academicYear.Id,
+                    StartDate = dto.EnrollmentStartDate.Date,
+                    Status = "Active"
+                });
+                await unitOfWork.SaveChangesAsync();
+            });
 
             return mapper.Map<StudentDto>(student);
         }
@@ -96,20 +125,6 @@ namespace Service.StudentService
                 .Where(e => e.Students.Any(s=>s.Id == studentId));
             ////////////////////////////////////////// mapping profile for class needed
             return mapper.Map<IEnumerable<ClassDto>>(studentClasses);
-        }
-
-        // 🟢 Attendance بتاع الطالب
-        public async Task<IEnumerable<AttendanceDto>> GetMyAttendanceAsync(int studentId)
-        {
-            var attendance = await unitOfWork
-                .GetRepository<Attendance, int>()
-                .GetAllAsync();
-
-            var myAttendance = attendance
-                .Where(a => a.StudentId == studentId);
-
-            return mapper.Map<IEnumerable<AttendanceDto>>(myAttendance);
-            //ااااااااااااااااااااااااااااااااااااااا
         }
     }
 }

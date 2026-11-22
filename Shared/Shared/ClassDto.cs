@@ -8,6 +8,7 @@ namespace Shared
 	{
 		public int Id { get; set; }
 		public string Name { get; set; }
+		public int AcademicYearId { get; set; }
 		public string AcademicYear { get; set; }
 
 		public string Grade { get; set; }

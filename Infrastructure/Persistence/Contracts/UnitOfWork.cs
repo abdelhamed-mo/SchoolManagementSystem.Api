@@ -19,6 +19,21 @@ namespace Persistence.Contracts
 		public async Task<int> SaveChangesAsync()
 		=> await mainContext.SaveChangesAsync();
 
+		public async Task ExecuteInTransactionAsync(Func<Task> action)
+		{
+			await using var transaction = await mainContext.Database.BeginTransactionAsync();
+			try
+			{
+				await action();
+				await transaction.CommitAsync();
+			}
+			catch
+			{
+				await transaction.RollbackAsync();
+				throw;
+			}
+		}
+
 		public IGenericRepository<TEntity, TKey> GetRepository<TEntity, TKey>() where TEntity : class
 		=> (GenericRepository<TEntity, TKey>)
 			storedRepositories.GetOrAdd(typeof(TEntity).Name

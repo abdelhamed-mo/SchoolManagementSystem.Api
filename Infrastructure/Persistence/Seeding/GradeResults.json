@@ -54,9 +54,9 @@
     "Score": 95
   },
   {
-    "StudentId": 10,
-    "ExamId": 1,
-    "GradeId": 10,
+    "StudentId": 1,
+    "ExamId": 2,
+    "GradeId": 1,
     "Score": 72
   }
 ]

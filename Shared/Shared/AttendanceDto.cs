@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Shared
 {
-    public class AttendanceDto
+    public record AttendanceDto
     {
+        public int Id { get; set; }
+        public int StudentId { get; set; }
+        public string StudentName { get; set; }
+        public int ClassId { get; set; }
+        public string ClassName { get; set; }
         public DateTime Date { get; set; }
-        public bool IsPresent { get; set; }
-        public string SubjectName { get; set; }
+        public string Status { get; set; }
     }
 }

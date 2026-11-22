@@ -12,5 +12,11 @@ namespace Service.ConcreteSpecifications
 
 
 		}
+
+		public ClassSpecifications(int id)
+			: base(c => c.Id == id)
+		{
+			AddInclude(c => c.ClassSubjects);
+		}
 	}
 }
